@@ -1,7 +1,7 @@
 import { CardList } from './components/card-list/card-list.component';
 import './App.css';
 import { Component } from 'react';
-// import { Search } from './components/search/search.component';
+import { SearchBox } from './components/search/search-box.component';
 
 class App extends Component {
   constructor() {
@@ -10,6 +10,11 @@ class App extends Component {
       monsters: [ ],
       searchField : ''
     }
+
+    //Here we bind "this" current context to our own methods
+    //This means we have to do this for every class method which is counter productive
+    //I better way is to use arrow function on the method
+    this.handleChange = this.handleChange.bind(this);
   }
 
 
@@ -19,6 +24,19 @@ class App extends Component {
     .then(response => response.json())
     .then(users => this.setState({monsters: users}))
     .then(users => console.log(users))
+  }
+
+  //This is our own function to set state
+  //Java script does not explicitly set "this" context on methods
+  //We have to bind thius method to "this" in constructor
+  // handleChange(e) {
+  //   this.setState({searchField: e.target.value})
+  // }
+
+  //Instead of using the above method which requires us to set the "this" context in constructor we can use the arrow function
+  //which will then set "this" in context where it was created
+  handleChange = (e) => {
+    this.setState({searchField: e.target.value})
   }
 
   render () { 
@@ -33,20 +51,8 @@ class App extends Component {
 
     return (
       <div className="App">
-        {/* <Search searchField={this.state.searchField}></Search> */}
-        <div>
-          <input type="search" 
-          placeholder='search monsters' 
-          id="searchItem" 
-          name="searchItem" 
-          // Call back function after searchField state is set to display state, as setState is asynchronouse and will eventually happen we have to use the 
-          // second paramater of the function setState to display actual value, we will later use this to filtr the list
-          //this.setState({searchField: e.target.value}, () => console.log(this.state.searchField))}}
-          //The OnChange event is not HTML , its JMX code
-          //React uses Synthetic events, the HTML equivelant is onchange, no camel case
-          onChange={e => {
-            this.setState({searchField: e.target.value})}}/>
-        </div>
+        <SearchBox placeholder='search monsters' handleChange={this.handleChange}></SearchBox> 
+        
          <CardList monsters={filteredMonsters}></CardList>
       </div>
     );
